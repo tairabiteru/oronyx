@@ -24,7 +24,7 @@ assert future == datetime.datetime(2025, 8, 26, 0, 30, 0)
 ## Installation
 Requires Python >=3.10:
 ```
-pip install git+https://github.com/tairabiteru/nintab.git
+pip install git+https://github.com/tairabiteru/oronyx.git
 ```
 ## FAQ
 - **Why?**
