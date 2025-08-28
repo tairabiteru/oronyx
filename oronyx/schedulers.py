@@ -19,8 +19,12 @@ def every_timedelta_at_time(
     every 1 week at 13:00
     every 6 seconds
     """
-    future = now + t_delta.delta
-    future = future.replace(hour=t_time.hour, minute=t_time.minute, second=t_time.second, microsecond=0)
+    future = now.replace(hour=t_time.hour, minute=t_time.minute, second=t_time.second, microsecond=0)
+    
+    if future > now:
+        return future
+    
+    future += t_delta.delta
     return future
 
 
