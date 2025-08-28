@@ -5,7 +5,7 @@ import typing as t
 from .schedulers import schedulers
 
 
-def get_scheduler(cron_string: str) -> t.Callable:
+def get_scheduler(cron_string: str) -> t.Callable | None:
     for scheduler in schedulers:
         match = re.search(scheduler.regex, cron_string)
 
