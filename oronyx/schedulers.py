@@ -9,7 +9,7 @@ from .utils import get_last_day_of_month
 def every_timedelta_at_time(
         now: datetime.datetime,
         t_delta: TimeDelta, 
-        t_time: Time | None = Time("00:00")
+        t_time: Time | None = None
     ) -> datetime.datetime:
     """
     Schedule every {timedelta} at {time}?
@@ -19,7 +19,10 @@ def every_timedelta_at_time(
     every 1 week at 13:00
     every 6 seconds
     """
-    future = now.replace(hour=t_time.hour, minute=t_time.minute, second=t_time.second, microsecond=0)
+    if t_time is not None:
+        future = now.replace(hour=t_time.hour, minute=t_time.minute, second=t_time.second, microsecond=0)
+    else:
+        future = now.replace(microsecond=0)
     
     if future > now:
         return future
