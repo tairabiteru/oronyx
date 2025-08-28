@@ -209,6 +209,22 @@ def on_dayofmonth_of_each_month_at_time(
     return future
 
 
+@scheduler(f"in {TimeDelta}")
+def in_timedelta(
+    now: datetime.datetime,
+    t_delta: TimeDelta
+) -> datetime.datetime:
+    """
+    Schedule in {time_delta}
+    
+    Ex:
+    in 12 hours
+    in 1 week
+    in 45 seconds
+    """
+    return now + t_delta.delta
+
+
 schedulers = [
     every_timedelta_at_time,
     everyday_at_time,
@@ -220,5 +236,6 @@ schedulers = [
     on_dayofmonth_of_each_month_at_time,
 
     # Less specific schedulers go last
-    at_time
+    at_time,
+    in_timedelta
 ]
