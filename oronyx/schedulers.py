@@ -1,7 +1,7 @@
 import datetime
 
 from .decorators import scheduler
-from .tokens import TimeDelta, Time, Weekday, AnnualDate, DayOfMonth
+from .tokens import TimeDelta, Time, Weekday, AnnualDate, DayOfMonth, Ordinal
 from .utils import get_last_day_of_month
 
 
@@ -192,7 +192,7 @@ def every_year_on_annualdate_at_time(
     return future
 
 
-@scheduler(f"on {DayOfMonth} of each month( at {Time})?")
+@scheduler(f"on {DayOfMonth} of (each|the) month( at {Time})?")
 def on_dayofmonth_of_each_month_at_time(
     now: datetime.datetime,
     t_day: DayOfMonth,
@@ -232,6 +232,57 @@ def in_timedelta(
     return now + t_delta.delta
 
 
+@scheduler(f"on the {Ordinal} day of (each|the) month( at {Time})?")
+def on_the_ordinal_day_of_the_month_at_time(
+    now: datetime.datetime,
+    t_ordinal: Ordinal,
+    t_time: Time = Time("00:00")
+) -> datetime.datetime:
+    """
+    Schedule on the {ordinal} day of the month at {time}?
+
+    Ex:
+    on the 2nd day of the month at 00:00
+    on the 1st day of each month
+    """
+    return on_dayofmonth_of_each_month_at_time(now, f"on day {t_ordinal.number} of each month at {t_time.text}")
+
+
+@scheduler(f"on the {Ordinal} {Weekday} of (each|the) month( at {Time})?")
+def on_the_ordinal_weekday_of_the_month_at_time(
+    now: datetime.datetime,
+    t_ordinal: Ordinal,
+    t_weekday: Weekday,
+    t_time: Time = Time("00:00")
+) -> datetime.datetime:
+    """
+    Schedule on the {ordinal} {weekday} of the month at {time}?
+
+    Ex:
+    on the 1st saturday of the month at 13:00
+    on the 2nd friday of each month
+    """
+    future = now.replace(day=1)
+    future = future.replace(hour=t_time.hour, minute=t_time.minute, second=t_time.second, microsecond=0)
+
+    while future.weekday() != t_weekday.number:
+        future += datetime.timedelta(days=1)
+    # Now it's the first {weekday} of the month
+
+    future += datetime.timedelta(days=7 * (t_ordinal.number - 1))
+
+    if future.month != now.month:
+        raise ValueError(f"Invalid ordinal for {now.month}/{now.year}: '{t_ordinal.number}'. There is no {t_ordinal.text} {t_weekday.text} of that month.")
+
+    if future < now:
+        current_month = now.month
+        while now.month == current_month:
+            now += datetime.timedelta(days=1)
+        return on_the_ordinal_weekday_of_the_month_at_time(now, f"on the {t_ordinal.text} {t_weekday.text} of the month at {t_time.text}")
+    
+    return future
+
+
 schedulers = [
     every_timedelta_at_time,
     everyday_at_time,
@@ -241,6 +292,8 @@ schedulers = [
     timedelta_before_the_last_day_of_the_month_at_time,
     every_year_on_annualdate_at_time,
     on_dayofmonth_of_each_month_at_time,
+    on_the_ordinal_day_of_the_month_at_time,
+    on_the_ordinal_weekday_of_the_month_at_time,
 
     # Less specific schedulers go last
     at_time,
