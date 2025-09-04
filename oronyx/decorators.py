@@ -69,7 +69,7 @@ class Scheduler:
     """
     def __init__(
             self,
-            func: Callable[[datetime.datetime, tuple[Token, ...]], datetime.datetime],
+            func: Callable[[datetime.datetime, Token], datetime.datetime],
             regex: str
         ):
 
@@ -89,7 +89,7 @@ class Scheduler:
         return self.func(now, *tokens)
 
 
-def scheduler(regex: str) -> Callable[[Callable[[datetime.datetime, tuple[Token, ...]], datetime.datetime]], Scheduler]:
+def scheduler(regex: str) -> Callable[[Callable[[datetime.datetime, Token], datetime.datetime]], Scheduler]:
     """
     Decorator which acts as a shortcut to making a Scheduler.
 
@@ -98,4 +98,42 @@ def scheduler(regex: str) -> Callable[[Callable[[datetime.datetime, tuple[Token,
     """
     def inner(func) -> Scheduler:
         return Scheduler(func, regex)
+    return inner
+
+
+class DeltaDeterminer:
+    """
+    
+    """
+    def __init__(
+            self,
+            func: Callable[[datetime.datetime, Token], datetime.datetime],
+            regex: str
+        ):
+
+        self.func = func
+        self.regex = regex
+    
+    @property
+    def name(self) -> str:
+        return self.func.__name__
+
+    def __call__(self, now: datetime.datetime, delta_string: str) -> datetime.datetime:
+        if not re.match(self.regex, delta_string):
+            raise ValueError(f"The string '{delta_string}' did not match the pattern '{self.regex}'")
+
+        tokens = lex(delta_string)
+        tokens = sorted(tokens, key=lambda x: self.regex.find(x.regex))
+        return self.func(now, *tokens)
+
+
+def delta_determiner(regex: str) -> Callable[[Callable[[datetime.datetime, Token], datetime.datetime]], DeltaDeterminer]:
+    """
+    Decorator which acts as a shortcut to making a Scheduler.
+
+    regex: str
+        The regex string which is used for func.
+    """
+    def inner(func) -> DeltaDeterminer:
+        return DeltaDeterminer(func, regex)
     return inner

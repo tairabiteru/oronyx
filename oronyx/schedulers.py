@@ -1,8 +1,9 @@
 import datetime
 
 from .decorators import scheduler
-from .tokens import TimeDelta, Time, Weekday, AnnualDate, DayOfMonth, Ordinal
-from .utils import get_last_day_of_month
+from .tokens import TimeDelta, Time, Weekday, AnnualDate, DayOfMonth, Ordinal, Season
+from .utils import get_last_day_of_month, get_solar_event_for_year, get_season
+
 
 
 @scheduler(f"every {TimeDelta}( at {Time})?")
@@ -118,7 +119,7 @@ def on_the_last_day_of_the_month_at_time(
     on the last day of the month at 23:59
     """
     last_day_this_month = get_last_day_of_month(now.month, now.year)
-    last_day_this_month = datetime.datetime(now.year, now.month, last_day_this_month)
+    last_day_this_month = datetime.datetime(now.year, now.month, last_day_this_month, tzinfo=now.tzinfo)
     target = last_day_this_month.replace(hour=t_time.hour, minute=t_time.minute, second=t_time.second)
 
     if target < now:
@@ -283,6 +284,70 @@ def on_the_ordinal_weekday_of_the_month_at_time(
     return future
 
 
+@scheduler(f"next {Season}")
+def next_season(
+    now: datetime.datetime,
+    t_season: Season
+) -> datetime.datetime:
+    """
+    Schedule next {season}
+
+    Ex: "next spring", "next winter"
+
+    Note that this returns astronomical seasons, I.E, equinoxes and solstices.
+    As such, these do NOT begin at midnight on the day of, they begin whenever
+    the solar event takes place. Further, aware datetimes are required for
+    this, as the time it happens depends entirely on your timezone.
+    """
+    future = get_solar_event_for_year(now.year, t_season.season)
+    
+    if future < now:
+        future = get_solar_event_for_year(now.year + 1, t_season.season)
+    
+    return future.astimezone(now.tzinfo)
+
+
+@scheduler(f"next meteorological {Season}")
+def next_meteorological_season(
+    now: datetime.datetime,
+    t_season: Season
+) -> datetime.datetime:
+    """
+    Schedule next meteorological {season}
+
+    Ex: "next meteorological spring", "next meteorological winter"
+
+    As the string implies, this works with meteorological seasons, not
+    astronomical events. Spring begins on March 1st at midnight, Summer on June
+    1st, Autumn on September 1st, and so on.
+    """
+    future = datetime.datetime(now.year, t_season.met_begin.month, t_season.met_begin.day, 0, 0, 0, tzinfo=now.tzinfo)
+
+    if future < now:
+        return future.replace(year=future.year + 1)
+    
+    return future
+
+
+@scheduler(f"every {TimeDelta} during {Season}( at {Time})?")
+def every_timedelta_during_season_at_time(
+    now: datetime.datetime,
+    t_delta: TimeDelta,
+    t_season: Season,
+    t_time: Time | None = Time("00:00")
+) -> datetime.datetime:
+    """
+    Schedule on {weekday} at {time}?
+    Shortcut to "every {weekday} at {time}
+
+    Ex:
+    on wednesdays
+    on sundays at 13:45
+    """
+    pass
+    
+
+
 schedulers = [
     every_timedelta_at_time,
     everyday_at_time,
@@ -294,7 +359,9 @@ schedulers = [
     on_dayofmonth_of_each_month_at_time,
     on_the_ordinal_day_of_the_month_at_time,
     on_the_ordinal_weekday_of_the_month_at_time,
-
+    next_meteorological_season,
+    next_season,
+    
     # Less specific schedulers go last
     at_time,
     in_timedelta

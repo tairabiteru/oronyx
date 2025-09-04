@@ -1,11 +1,11 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "356d0f8762b2b972f2a073f481ed3d3cf98ef2b0ed59132aeff315abfaff74a9"
+            "sha256": "f5319777fab2740e3f9b67b6515f4687c6572e7c0bee370010100861e277b747"
         },
         "pipfile-spec": 6,
         "requires": {
-            "python_version": "3.13"
+            "python_version": "3.10"
         },
         "sources": [
             {
@@ -16,6 +16,14 @@
         ]
     },
     "default": {
+        "astronomy-engine": {
+            "hashes": [
+                "sha256:232ba7dd2bbf42225c48be6721b676e8c6c079dbd4588d2781dfa68adcb6f67f",
+                "sha256:95b797b87b659adc0602a6a205143ce5a10451664e80650bb7cd8ba3c8f1f02b"
+            ],
+            "index": "pypi",
+            "version": "==2.1.19"
+        },
         "iniconfig": {
             "hashes": [
                 "sha256:3abbd2e30b36733fee78f9c7f7308f2d0050e88f0087fd25c2645f63c773e1c7",

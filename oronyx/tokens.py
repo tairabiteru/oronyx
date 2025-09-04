@@ -296,12 +296,56 @@ class Ordinal(Token):
         self.number = int(re.sub("(st|nd|rd|th)", "", text))
 
 
+class Season(Token):
+    """
+    A season of the year.
+
+    Ex: summer, winter, autumn, fall, spring
+
+    Attributes
+    ----------
+    season: str
+        The season. "fall" is always resolved to "autumn."
+    regex: str
+        The regex which matches a season token.
+    text: str
+        The original text which matches the regex.
+    """
+    regex = r"((spring)|(summer)|(fall)|(autumn)|(winter))"
+
+    def __init__(self, text):
+        self.text = text
+        
+        if self.text == "fall":
+            self.season = "autumn"
+        else:
+            self.season = text
+    
+    @property
+    def met_begin(self) -> AnnualDate:
+        """
+        The annual date associated with the meteorological start of the season.
+        """
+        match self.season:
+            case "spring":
+                return AnnualDate("3/1")
+            case "summer":
+                return AnnualDate("6/1")
+            case "autumn":
+                return AnnualDate("9/1")
+            case "winter":
+                return AnnualDate("12/1")
+            case _:
+                raise ValueError("This should never happen.")
+
+
 all_tokens = [
     AbsoluteDate,
     AnnualDate,
     Weekday,
     Time,
     TimeDelta,
+    Season,
 
     # Less specific tokens go last
     DayOfMonth,
