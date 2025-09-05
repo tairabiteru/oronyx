@@ -1,8 +1,11 @@
 [project]
 name = "oronyx"
-version = "1.1.0"
+version = "1.1.1"
 requires-python = ">=3.10"
 description = "Easy to read English scheduling. Like Cron, but for humans."
 authors = [
     {name = "Taira", email = "tairabiteru@users.noreply.github.com"}
+]
+dependencies = [
+    "astronomy-engine"
 ]
