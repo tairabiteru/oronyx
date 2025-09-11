@@ -1,7 +1,9 @@
+from __future__ import annotations
 import datetime
 import re
 
 from typing import TypeVarTuple
+from .utils import parse_time
 
 
 Tokens = TypeVarTuple('Tokens')
@@ -79,6 +81,11 @@ class AbsoluteDate(Token):
     def year(self) -> int:
         return self.date.year
 
+    def __eq__(self, obj: object) -> bool:
+        if not isinstance(obj, AbsoluteDate):
+            return False
+        return self.day == obj.day and self.month == obj.month and self.year == obj.year
+
 
 class AnnualDate(Token):
     """
@@ -126,6 +133,11 @@ class AnnualDate(Token):
             "July", "August", "September", "October", "November", "December"
         ]
         return names[self.month]
+    
+    def __eq__(self, obj: object) -> bool:
+        if not isinstance(obj, AnnualDate):
+            return False
+        return self.day == obj.day and self.month == obj.month
 
 
 class DayOfMonth(Token):
@@ -151,6 +163,9 @@ class DayOfMonth(Token):
         self.text = text
 
         self.day = int(text.split(" ")[-1])
+
+        if self.day > 31:
+            raise ValueError("Months can't have more than 31 days.")
 
 
 class Weekday(Token):
@@ -208,18 +223,25 @@ class Time(Token):
     text: str
         The original text which matches the regex.
     """
-    regex = r"([0-1]?[0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?"
+    regex = r"(((1[0-2]|0?[1-9])(:([0-5][0-9]))?(:[0-5][0-9])? ?([AaPp][Mm]))|(([0-1]?[0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?))"
 
     def __init__(self, text: str):
         self.text = text
 
-        try:
-            h, m, s = tuple(text.split(":"))
-        except ValueError:
-            h, m = tuple(text.split(":"))
-            s = "0"
+        if self.text.lower().endswith("am") or self.text.lower().endswith("pm"):
+            t = self.text.lower().replace(" ", "")
+            
+            ampm = t[-2:]
+            t = t[:-2]
+
+            h, m, s = parse_time(t)
+
+            if ampm == "pm" and h != 12:
+                h += 12
+
+        else:
+            h, m, s = parse_time(self.text)
         
-        h, m, s = tuple(map(int, [h, m, s]))
         self.time = datetime.time(hour=h, minute=m, second=s, microsecond=0)
     
     @property
@@ -257,7 +279,7 @@ class TimeDelta(Token):
     """
     regex = r"\d+ (seconds?|minutes?|hours?|days?|weeks?|years?){1}"
 
-    def __init__(self, text):
+    def __init__(self, text: str):
         self.text = text
 
         number, unit = tuple(text.split(" "))

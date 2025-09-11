@@ -151,3 +151,18 @@ def ord_weekday_eval(
         return ord_weekday_eval(now, i+1, t_ordinal, t_weekday, t_time, reference=reference)
 
     return reference
+
+
+def parse_time(time_string: str) -> tuple[int, int, int]:
+    try:
+        h, m, s = tuple(time_string.split(":"))
+    except ValueError:
+        try:
+            h, m = tuple(time_string.split(":"))
+            s = "0"
+        except ValueError:
+            h, m, s = time_string, "0", "0"
+    
+    out = tuple(map(int, [h, m, s]))
+    assert len(out) == 3
+    return out
