@@ -1,10 +1,15 @@
 import datetime
 import re
 
+from typing import TypeVarTuple
+
+
+Tokens = TypeVarTuple('Tokens')
+
 
 class Meta(type):
     def __repr__(self):
-        return self.regex
+        return self.regex # type: ignore
 
 
 class Token(metaclass=Meta):

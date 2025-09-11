@@ -3,18 +3,22 @@ import oronyx
 
 
 def test_function_resolver():
-    test_str = "next meteorological summer"
-    function = oronyx.get_scheduler(test_str)
-    assert function.name == "next_meteorological_season"
+    timeline = oronyx.get_blank_timeline("next meteorological summer")
+    assert timeline is not None
+    assert timeline.determinant.__name__ == "next_meteorological_season"
 
 
 def test_before():
     now = datetime.datetime(2025, 1, 4, 11, 45, 0)
-    future = oronyx.get_future(now, "next meteorological summer")
-    assert future == datetime.datetime(2025, 6, 1)
+    timeline = oronyx.get_timeline(now, "next meteorological summer")
+    assert timeline[-1] == datetime.datetime(2024, 6, 1)
+    assert timeline[0] == datetime.datetime(2025, 6, 1)
+    assert timeline[1] == datetime.datetime(2026, 6, 1)
 
 
 def test_after():
     now = datetime.datetime(2025, 6, 4, 11, 45, 0)
-    future = oronyx.get_future(now, "next meteorological summer")
-    assert future == datetime.datetime(2026, 6, 1)
+    timeline = oronyx.get_timeline(now, "next meteorological summer")
+    assert timeline[-1] == datetime.datetime(2025, 6, 1)
+    assert timeline[0] == datetime.datetime(2026, 6, 1)
+    assert timeline[1] == datetime.datetime(2027, 6, 1)

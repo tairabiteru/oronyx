@@ -1,11 +1,10 @@
 import datetime
-from oronyx.decorators import lex
+from oronyx.timeline import lex
 from oronyx.tokens import TimeDelta, Time, AnnualDate
 
 
 def test_timedelta():
-    test_str = "in 6 days at 4:30"
-    tokens = lex(test_str)
+    tokens = lex("in 6 days at 4:30")
     assert len(tokens) == 2
     assert isinstance(tokens[1], TimeDelta)
     assert tokens[1].delta.total_seconds() == (86400 * 6)
