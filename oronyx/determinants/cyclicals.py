@@ -46,7 +46,7 @@ def every_weekday_at_time(
         now: datetime.datetime,
         i: int,
         t_weekday: Weekday, 
-        t_time: Time | None = Time("00:00")
+        t_time: Time = Time("00:00")
 ) -> datetime.datetime:
     """
     Schedule every {weekday} at {time}?
@@ -70,7 +70,7 @@ def every_weekday_at_time(
 def on_the_last_day_of_the_month_at_time(
         now: datetime.datetime,
         i: int,
-        t_time: Time | None = Time("00:00")
+        t_time: Time = Time("00:00")
 ) -> datetime.datetime:
     """
     Schedule on the last day of the month at {time}?
@@ -131,7 +131,7 @@ def every_year_on_annualdate_at_time(
     now: datetime.datetime,
     i: int,
     t_date: AnnualDate,
-    t_time: Time | None = Time("00:00")
+    t_time: Time = Time("00:00")
 ) -> datetime.datetime:
     """
     Schedule every year on {mm/dd} at {time}?
@@ -156,7 +156,7 @@ def on_dayofmonth_of_each_month_at_time(
     now: datetime.datetime,
     i: int,
     t_day: DayOfMonth,
-    t_time: Time | None = Time("00:00")
+    t_time: Time = Time("00:00")
 ) -> datetime.datetime:
     """
     Schedule on {day_of_month} of each month at {time}?
