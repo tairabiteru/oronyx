@@ -3,9 +3,8 @@ import datetime
 import re
 
 from .determinants import all_timelines, all_pasts, all_futures
-import impl
 from .impl import Timeline, Past, Future
-import tokens
+from .tokens import *
 
 
 def get_blank_timeline(time_string: str) -> Timeline | None:
