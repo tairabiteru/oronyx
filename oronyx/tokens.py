@@ -2,11 +2,7 @@ from __future__ import annotations
 import datetime
 import re
 
-from typing import TypeVarTuple
 from .utils import parse_time
-
-
-Tokens = TypeVarTuple('Tokens')
 
 
 class Meta(type):

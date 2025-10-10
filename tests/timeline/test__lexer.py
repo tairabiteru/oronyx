@@ -1,5 +1,5 @@
 import datetime
-from oronyx.timeline import lex
+from oronyx.impl.base import lex
 from oronyx.tokens import TimeDelta, Time, AnnualDate
 
 

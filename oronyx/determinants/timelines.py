@@ -1,11 +1,11 @@
 import datetime
 
-from ..timeline import determinant
+from ..impl import timeline
 from ..tokens import TimeDelta, Time, Weekday, AnnualDate, DayOfMonth, Ordinal, Season
 from ..utils import get_last_day_of_month, month_step, get_solar_event_for_year, get_nth_weekday_of_month, ord_weekday_eval, last_weekday_eval
 
 
-@determinant(f"every {TimeDelta}( at {Time})?")
+@timeline(f"every {TimeDelta}( at {Time})?")
 def every_timedelta_at_time(
     now: datetime.datetime, 
     i: int,
@@ -23,7 +23,7 @@ def every_timedelta_at_time(
         return reference + (t_delta.delta * i)
 
 
-@determinant(f"every ?day( at {Time})?")
+@timeline(f"every ?day( at {Time})?")
 def every_day_at_time(
     now: datetime.datetime, 
     i: int,
@@ -32,7 +32,7 @@ def every_day_at_time(
     return every_timedelta_at_time(now, i, TimeDelta("1 day"), t_time)
 
 
-@determinant(f"at {Time}")
+@timeline(f"at {Time}")
 def at_time(
     now: datetime.datetime, 
     i: int,
@@ -41,7 +41,7 @@ def at_time(
     return every_timedelta_at_time(now, i, TimeDelta("1 day"), t_time)
 
 
-@determinant(f"(every)|(on) {Weekday}( at {Time})?")
+@timeline(f"(every)|(on) {Weekday}( at {Time})?")
 def every_weekday_at_time(
         now: datetime.datetime,
         i: int,
@@ -66,7 +66,7 @@ def every_weekday_at_time(
         return reference + datetime.timedelta(days=7 * i)
 
 
-@determinant(f"on the last day of the month( at {Time})?")
+@timeline(f"on the last day of the month( at {Time})?")
 def on_the_last_day_of_the_month_at_time(
         now: datetime.datetime,
         i: int,
@@ -99,7 +99,7 @@ def on_the_last_day_of_the_month_at_time(
     return next_instance
 
 
-@determinant(f"{TimeDelta} before the last day of the month( at {Time})?")
+@timeline(f"{TimeDelta} before the last day of the month( at {Time})?")
 def timedelta_before_the_last_day_of_the_month_at_time(
     now: datetime.datetime,
     i: int,
@@ -126,7 +126,7 @@ def timedelta_before_the_last_day_of_the_month_at_time(
     return target - t_delta.delta
 
 
-@determinant(f"every year on {AnnualDate}( at {Time})?")
+@timeline(f"every year on {AnnualDate}( at {Time})?")
 def every_year_on_annualdate_at_time(
     now: datetime.datetime,
     i: int,
@@ -151,7 +151,7 @@ def every_year_on_annualdate_at_time(
     return next_instance
 
 
-@determinant(f"on {DayOfMonth} of (each|the) month( at {Time})?")
+@timeline(f"on {DayOfMonth} of (each|the) month( at {Time})?")
 def on_dayofmonth_of_each_month_at_time(
     now: datetime.datetime,
     i: int,
@@ -176,26 +176,7 @@ def on_dayofmonth_of_each_month_at_time(
     return reference.replace(year=y, month=m)
 
 
-@determinant(f"in {TimeDelta}")
-def in_timedelta(
-    now: datetime.datetime,
-    i: int,
-    t_delta: TimeDelta
-) -> datetime.datetime:
-    """
-    Schedule in {time_delta}
-    
-    Ex:
-    in 12 hours
-    in 1 week
-    in 45 seconds
-    """
-    if i >= 0:
-        i += 1
-    return now + (t_delta.delta * i)
-
-
-@determinant(f"on the {Ordinal} day of (each|the) month( at {Time})?")
+@timeline(f"on the {Ordinal} day of (each|the) month( at {Time})?")
 def on_the_ordinal_day_of_the_month_at_time(
     now: datetime.datetime,
     i: int,
@@ -212,7 +193,7 @@ def on_the_ordinal_day_of_the_month_at_time(
     return on_dayofmonth_of_each_month_at_time(now, i, DayOfMonth(str(t_ordinal.number)), t_time)
 
 
-@determinant(f"next {Season}")
+@timeline(f"next {Season}")
 def next_season(
     now: datetime.datetime,
     i: int,
@@ -238,7 +219,7 @@ def next_season(
     return next_instance.astimezone(now.tzinfo)
 
 
-@determinant(f"next meteorological {Season}")
+@timeline(f"next meteorological {Season}")
 def next_meteorological_season(
     now: datetime.datetime,
     i: int,
@@ -261,7 +242,7 @@ def next_meteorological_season(
         return datetime.datetime(now.year + i, t_season.met_begin.month, t_season.met_begin.day, 0, 0, 0, tzinfo=now.tzinfo)
     
 
-@determinant(f"on the {Ordinal} {Weekday} of the month( at {Time})?")
+@timeline(f"on the {Ordinal} {Weekday} of the month( at {Time})?")
 def on_the_ordinal_weekday_of_the_month_at_time(
     now: datetime.datetime,
     i: int,
@@ -282,7 +263,7 @@ def on_the_ordinal_weekday_of_the_month_at_time(
     return date
 
 
-@determinant(f"on the last {Weekday} of the month( at {Time})?")
+@timeline(f"on the last {Weekday} of the month( at {Time})?")
 def on_the_last_weekday_of_the_month_at_time(
     now: datetime.datetime,
     i: int,
@@ -315,5 +296,4 @@ all_cyclical_timelines = [
     # This is because they can conflict with more specific
     # timelines.
     at_time,
-    in_timedelta,
 ]

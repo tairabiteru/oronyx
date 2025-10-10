@@ -3,9 +3,9 @@ import oronyx
 
 
 def test_function_resolver():
-    timeline = oronyx.get_blank_timeline("in 6 days")
+    timeline = oronyx.get_blank_timeline("at 3:45")
     assert timeline is not None
-    assert timeline.determinant.__name__ == "in_timedelta"
+    assert timeline.determinant.__name__ == "at_time"
 
 
 def test_before():
