@@ -21,6 +21,7 @@ class Past(Determinant):
         self._now: datetime.datetime | None = None
 
     def __call__(self, now: datetime.datetime, time_string: str) -> datetime.datetime:
+        now = now.replace(microsecond=0)
         self.set_now(now).set_logic(time_string)
         return self.determinant(self.now, *self.tokens)
 

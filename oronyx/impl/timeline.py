@@ -52,6 +52,7 @@ class Timeline(Determinant):
         return self.determinant(self.now, i, *self.tokens)
     
     def __call__(self, now: datetime.datetime, i: int, *tokens: ...) -> datetime.datetime:
+        now = now.replace(microsecond=0)
         return self.determinant(now, i, *tokens)
 
 

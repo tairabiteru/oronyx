@@ -7,6 +7,10 @@ from .impl import Timeline, Past, Future
 from .tokens import *
 
 
+__author__ = "Taira"
+__version__ = "3.0.3"
+
+
 def get_blank_timeline(time_string: str) -> Timeline | None:
     for timeline in all_timelines:
         match = re.search(timeline.regex, time_string)
@@ -65,6 +69,8 @@ def get_future(now: datetime.datetime, time_string: str) -> datetime.datetime:
 
 
 __all__ = (
+    "__author__",
+    "__version__",
     "get_blank_timeline",
     "get_timeline",
     "get_future_obj",
