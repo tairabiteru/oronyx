@@ -8,7 +8,7 @@ from .tokens import *
 
 
 __author__ = "Taira"
-__version__ = "3.0.3"
+__version__ = "3.1.0"
 
 
 def get_blank_timeline(time_string: str) -> Timeline | None:

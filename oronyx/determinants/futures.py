@@ -1,8 +1,8 @@
 import datetime
 
-from ..tokens import TimeDelta, Time, Weekday
+from ..tokens import TimeDelta, Time, Weekday, AnnualDate
 from ..impl import future
-from .timelines import every_timedelta_at_time, every_weekday_at_time
+from .timelines import every_timedelta_at_time, every_weekday_at_time, every_year_on_annualdate_at_time
 
 
 @future(f"in {TimeDelta}( at {Time})?")
@@ -48,7 +48,17 @@ def next_weekday_at_time(
     return every_weekday_at_time(now, 0, *[t_weekday, t_time])
 
 
+@future(f"on {AnnualDate}( at {Time})?")
+def on_annualdate_at_time(
+    now: datetime.datetime,
+    t_date: AnnualDate,
+    t_time: Time = Time("0:00")
+) -> datetime.datetime:
+    return every_year_on_annualdate_at_time(now, 0, *[t_date, t_time])
+
+
 all_futures = [
+    on_annualdate_at_time,
     in_timedelta_at_time,
     timedelta_from_now_at_time,
     next_weekday_at_time,
