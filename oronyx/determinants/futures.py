@@ -48,6 +48,15 @@ def next_weekday_at_time(
     return every_weekday_at_time(now, 0, *[t_weekday, t_time])
 
 
+@future(f"(on|every) {Weekday}s?( at {Time})?")
+def on_weekday_at_time(
+    now: datetime.datetime,
+    t_weekday: Weekday,
+    t_time: Time = Time("0:00")
+) -> datetime.datetime:
+    return every_weekday_at_time(now, 0, *[t_weekday, t_time])
+
+
 @future(f"on {AnnualDate}( at {Time})?")
 def on_annualdate_at_time(
     now: datetime.datetime,
@@ -62,5 +71,6 @@ all_futures = [
     in_timedelta_at_time,
     timedelta_from_now_at_time,
     next_weekday_at_time,
+    on_weekday_at_time,
     at_time
 ]
