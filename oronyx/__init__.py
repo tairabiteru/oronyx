@@ -8,14 +8,12 @@ from .tokens import *
 
 
 __author__ = "Taira"
-__version__ = "3.1.0"
+__version__ = "3.2.0"
 
 
 def get_blank_timeline(time_string: str) -> Timeline | None:
     for timeline in all_timelines:
-        match = re.search(timeline.regex, time_string)
-
-        if match: 
+        if timeline.matches(time_string):
             return timeline
     else:
         return None

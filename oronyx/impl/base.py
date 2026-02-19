@@ -55,16 +55,34 @@ class Determinant:
         self._time_string: str | None = None
         self._tokens: list[Token] | None = None
         self._now: datetime.datetime | None = None
+        
+    
+    @staticmethod
+    def clean_time_string(time_string: str) -> str:
+        return time_string.strip().lower()
 
     def set_now(self, now: datetime.datetime) -> Determinant:
         self._now = now
         return self
     
     def set_logic(self, time_string: str) -> Determinant:
-        self._time_string = time_string
+        self._time_string = self.clean_time_string(time_string)
         self._tokens = None
         return self
     
+    def matches(self, time_string: str) -> bool:
+        time_string = self.clean_time_string(time_string)
+        match = re.search(self.regex, time_string)
+        
+        if not match:
+            return False
+        
+        time_string = time_string.replace(match.group(), "")
+        if not time_string:
+            return True
+        
+        return False
+            
     @property
     def name(self) -> str:
         return self.determinant.__name__

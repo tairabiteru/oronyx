@@ -41,7 +41,7 @@ def at_time(
     return every_timedelta_at_time(now, i, TimeDelta("1 day"), t_time)
 
 
-@timeline(f"(every)|(on) {Weekday}( at {Time})?")
+@timeline(f"(every|on) {Weekday}( at {Time})?")
 def every_weekday_at_time(
         now: datetime.datetime,
         i: int,
@@ -107,7 +107,7 @@ def timedelta_before_the_last_day_of_the_month_at_time(
     t_time: Time | None = Time("00:00")
 ) -> datetime.datetime:
     """
-    Schedule {timedelta} beofre the last day of the month at {time}?
+    Schedule {timedelta} before the last day of the month at {time}?
 
     Similar to "on the last day of the month" but an offset can be
     applied to it.
