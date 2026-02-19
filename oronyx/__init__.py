@@ -8,7 +8,7 @@ from .tokens import *
 
 
 __author__ = "Taira"
-__version__ = "3.2.0"
+__version__ = "3.2.1"
 
 
 def get_blank_timeline(time_string: str) -> Timeline | None:
@@ -32,10 +32,7 @@ def get_timeline(now: datetime.datetime, time_string: str) -> Timeline:
 
 def get_past_obj(time_string: str) -> Callable[[datetime.datetime, str], datetime.datetime] | None:
     for past in all_pasts:
-        assert isinstance(past, Past)
-        match = re.search(past.regex, time_string)
-        
-        if match:
+        if past.matches(time_string):
             return past
     else:
         return None
@@ -50,10 +47,7 @@ def get_past(now: datetime.datetime, time_string: str) -> datetime.datetime:
 
 def get_future_obj(time_string: str) -> Callable[[datetime.datetime, str], datetime.datetime] | None:
     for future in all_futures:
-        assert isinstance(future, Future)
-        match = re.search(future.regex, time_string)
-        
-        if match:
+        if future.matches(time_string):
             return future
     else:
         return None
