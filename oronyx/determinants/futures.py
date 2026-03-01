@@ -1,9 +1,9 @@
 import datetime
 
-from ..tokens import TimeDelta, Time, Weekday, AnnualDate
+from ..tokens import TimeDelta, Time, Weekday, AnnualDate, Ordinal
 from ..impl import future
-from .timelines import every_timedelta_at_time, every_weekday_at_time, every_year_on_annualdate_at_time
-
+from .timelines import every_timedelta_at_time, every_weekday_at_time, every_year_on_annualdate_at_time, timedelta_before_the_last_day_of_the_month_at_time
+from .timelines import on_the_ordinal_day_of_the_month_at_time
 
 @future(f"in {TimeDelta}( at {Time})?")
 def in_timedelta_at_time(
@@ -66,11 +66,31 @@ def on_annualdate_at_time(
     return every_year_on_annualdate_at_time(now, 0, *[t_date, t_time])
 
 
+@future(f"{TimeDelta} before the last day of the month( at {Time})?")
+def future_timedelta_before_the_last_day_of_the_month_at_time(
+    now: datetime.datetime,
+    t_delta: TimeDelta,
+    t_time: Time = Time("0:00")
+) -> datetime.datetime:
+    return timedelta_before_the_last_day_of_the_month_at_time(now, 0, t_delta, t_time)
+
+
+@future(f"on the {Ordinal} day of (each|the) month( at {Time})?")
+def future_on_the_ordinal_day_of_each_month_at_time(
+    now: datetime.datetime,
+    t_ord: TimeDelta,
+    t_time: Time = Time("0:00")
+) -> datetime.datetime:
+    return on_the_ordinal_day_of_the_month_at_time(now, 0, t_ord, t_time)
+
+
 all_futures = [
     on_annualdate_at_time,
     in_timedelta_at_time,
     timedelta_from_now_at_time,
     next_weekday_at_time,
+    future_timedelta_before_the_last_day_of_the_month_at_time,
+    future_on_the_ordinal_day_of_each_month_at_time,
     on_weekday_at_time,
     at_time
 ]

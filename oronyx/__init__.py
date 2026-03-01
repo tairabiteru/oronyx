@@ -2,13 +2,13 @@ from collections.abc import Callable
 import datetime
 import re
 
-from .determinants import all_timelines, all_pasts, all_futures
+from .determinants import all_timelines, all_pasts, all_futures, all_periods
 from .impl import Timeline, Past, Future
 from .tokens import *
 
 
 __author__ = "Taira"
-__version__ = "3.3.0"
+__version__ = "3.4.0"
 
 
 def get_blank_timeline(time_string: str) -> Timeline | None:
@@ -57,6 +57,22 @@ def get_future(now: datetime.datetime, time_string: str) -> datetime.datetime:
     determinant = get_future_obj(time_string)
     if determinant is None:
         raise ValueError(f"No future determinant exists for the time string '{time_string}'")
+    return determinant(now, time_string)
+
+
+def get_period_obj(time_string: str) -> Callable[[datetime.datetime, str], tuple[datetime.datetime, datetime.datetime]] | None:
+    for period in all_periods:
+        if period.matches(time_string):
+            return period
+    else:
+        return None
+
+
+def get_period(now: datetime.datetime, time_string: str) -> tuple[datetime.datetime, datetime.datetime]:
+    determinant = get_period_obj(time_string)
+    if determinant is None:
+        raise ValueError(f"No period determinant exists for the time string '{time_string}'")
+    
     return determinant(now, time_string)
 
 
